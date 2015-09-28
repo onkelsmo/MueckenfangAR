@@ -4,13 +4,22 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".MueckenfangActivity">
+    tools:context=".MueckenfangActivity"
+    android:background="@drawable/background">
 
     <TextView
         android:text="@string/welcome_msg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textColor="@color/background_floating_material_light"
+        android:layout_gravity="center" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/muecke"
+        android:padding="20dp" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
