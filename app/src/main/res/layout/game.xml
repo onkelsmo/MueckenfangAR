@@ -5,7 +5,87 @@
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".MueckenfangActivity"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:weightSum="1">
 
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/points"
+            android:layout_gravity="left"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="Large Text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/round"
+            android:layout_gravity="right"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="Large Text" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gamearea"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1.00" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="50dp"
+                android:layout_height="5dp"
+                android:background="#d40a5908"
+                android:id="@+id/bar_hits"
+                android:layout_gravity="center_vertical">
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/hits"
+                android:layout_gravity="right" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="50dp"
+                android:layout_height="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="#d40a5908"
+                android:id="@+id/bar_time" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/time"
+                android:layout_gravity="right" />
+
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>
