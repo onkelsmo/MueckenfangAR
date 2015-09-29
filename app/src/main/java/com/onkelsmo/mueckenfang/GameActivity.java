@@ -6,6 +6,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.util.Random;
+
 public class GameActivity extends Activity {
     private boolean isRuning = false;
     private int round;
@@ -14,6 +16,7 @@ public class GameActivity extends Activity {
     private int midgesCatched;
     private int time;
     private float scale;
+    private Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,5 +62,47 @@ public class GameActivity extends Activity {
 
         LayoutParams lpTime = flTime.getLayoutParams();
         lpTime.width = Math.round(scale * time * 300 / 60);
+    }
+
+    private void countDown() {
+        time = time - 1;
+
+        float randomNumber = random.nextFloat();
+        if (randomNumber < midges * 1.5 / 60) {
+            showMidge();
+        }
+
+        double probability = midges * 1.5f / 60;
+        if (probability > 1) {
+            showMidge();
+            if (randomNumber < probability - 1) {
+                showMidge();
+            }
+        } else {
+            if (randomNumber < probability) {
+                showMidge();
+            }
+        }
+        vanishMidge();
+        updateDisplay();
+        if (!isGameOver()) {
+            isRoundOver();
+        }
+    }
+
+    private boolean isRoundOver() {
+        return false;
+    }
+
+    private boolean isGameOver() {
+        return false;
+    }
+
+    private void vanishMidge() {
+
+    }
+
+    private void showMidge() {
+
     }
 }
