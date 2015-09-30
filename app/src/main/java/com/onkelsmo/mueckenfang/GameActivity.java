@@ -17,6 +17,8 @@ import java.util.Random;
 
 public class GameActivity extends Activity implements View.OnClickListener, Runnable {
     private static final long MAXAGE_MS = 2000;
+    public static final int DELAY_MILLIS = 100;
+    public static final int TIMESCALE = 600;
     private boolean isRuning = false;
     private int round;
     private int score;
@@ -33,6 +35,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
         scale = getResources().getDisplayMetrics().density;
+        gameArea = (ViewGroup)findViewById(R.id.gamearea);
         startGame();
     }
 
@@ -47,7 +50,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         round = round + 1;
         midges = round * 10;
         midgesCatched = 0;
-        time = 60;
+        time = TIMESCALE;
         updateDisplay();
         handler.postDelayed(this, 1000);
     }
@@ -63,7 +66,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         tvHits.setText(Integer.toString(midgesCatched));
 
         TextView tvTime = (TextView)findViewById(R.id.time);
-        tvTime.setText(Integer.toString(time));
+        tvTime.setText(Integer.toString(time / (1000 / DELAY_MILLIS)));
 
         FrameLayout flHits = (FrameLayout)findViewById(R.id.bar_hits);
         FrameLayout flTime = (FrameLayout)findViewById(R.id.bar_time);
@@ -72,33 +75,30 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         lpHits.width = Math.round(scale * 300 * Math.min(midgesCatched,midges) / midges);
 
         LayoutParams lpTime = flTime.getLayoutParams();
-        lpTime.width = Math.round(scale * time * 300 / 60);
+        lpTime.width = Math.round(scale * time * 300 / TIMESCALE);
     }
 
     private void countDown() {
         time = time - 1;
-
-        float randomNumber = random.nextFloat();
-        if (randomNumber < midges * 1.5 / 60) {
-            showMidge();
-        }
-
-        double probability = midges * 1.5f / 60;
-        if (probability > 1) {
-            showMidge();
-            if (randomNumber < probability - 1) {
+        if (time % (1000/DELAY_MILLIS) == 0) {
+            float randomNumber = random.nextFloat();
+            double probability = midges * 1.5;
+            if (probability > 1) {
                 showMidge();
-            }
-        } else {
-            if (randomNumber < probability) {
-                showMidge();
+                if (randomNumber < probability - 1) {
+                    showMidge();
+                }
+            } else {
+                if (randomNumber < probability) {
+                    showMidge();
+                }
             }
         }
         vanishMidge();
         updateDisplay();
         if (!isGameOver()) {
             if (!isRoundOver()) {
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, DELAY_MILLIS);
             }
         }
     }
@@ -142,8 +142,6 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     }
 
     private void showMidge() {
-        gameArea = (ViewGroup)findViewById(R.id.gamearea);
-
         int width = gameArea.getWidth();
         int height = gameArea.getHeight();
 

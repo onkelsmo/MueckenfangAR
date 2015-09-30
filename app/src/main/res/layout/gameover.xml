@@ -10,5 +10,6 @@
         android:id="@+id/textView"
         android:layout_gravity="center"
         android:textSize="32sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@android:color/black" />
 </FrameLayout>
