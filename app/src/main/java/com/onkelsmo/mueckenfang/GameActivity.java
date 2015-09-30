@@ -3,6 +3,7 @@ package com.onkelsmo.mueckenfang;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 import java.util.Date;
 import java.util.Random;
 
-public class GameActivity extends Activity implements View.OnClickListener {
+public class GameActivity extends Activity implements View.OnClickListener, Runnable {
     private static final long MAXAGE_MS = 2000;
     private boolean isRuning = false;
     private int round;
@@ -25,6 +26,7 @@ public class GameActivity extends Activity implements View.OnClickListener {
     private float scale;
     private Random random = new Random();
     private ViewGroup gameArea;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class GameActivity extends Activity implements View.OnClickListener {
         midgesCatched = 0;
         time = 60;
         updateDisplay();
+        handler.postDelayed(this, 1000);
     }
 
     private void updateDisplay() {
@@ -94,7 +97,9 @@ public class GameActivity extends Activity implements View.OnClickListener {
         vanishMidge();
         updateDisplay();
         if (!isGameOver()) {
-            isRoundOver();
+            if (!isRoundOver()) {
+                handler.postDelayed(this, 1000);
+            }
         }
     }
 
@@ -168,5 +173,10 @@ public class GameActivity extends Activity implements View.OnClickListener {
         score += 100;
         updateDisplay();
         gameArea.removeView(midge);
+    }
+
+    @Override
+    public void run() {
+        countDown();
     }
 }
