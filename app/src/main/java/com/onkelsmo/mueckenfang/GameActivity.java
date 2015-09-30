@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Random;
 
 public class GameActivity extends Activity implements View.OnClickListener {
+    private static final long MAXAGE_MS = 2000;
     private boolean isRuning = false;
     private int round;
     private int score;
@@ -117,7 +118,18 @@ public class GameActivity extends Activity implements View.OnClickListener {
     }
 
     private void vanishMidge() {
-
+        int count = 0;
+        while (count < gameArea.getChildCount()) {
+            ImageView midge = (ImageView)gameArea.getChildAt(count);
+            Date dateOfBirth = (Date)midge.getTag(R.id.date_of_birth);
+            long age = (new Date()).getTime() - dateOfBirth.getTime();
+            
+            if (age > MAXAGE_MS) {
+                gameArea.removeView(midge);
+            } else {
+               count++;
+            }
+        }
     }
 
     private void showMidge() {
