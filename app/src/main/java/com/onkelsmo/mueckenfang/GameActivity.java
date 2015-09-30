@@ -91,11 +91,23 @@ public class GameActivity extends Activity {
     }
 
     private boolean isRoundOver() {
+        if (midgesCatched >= midges) {
+            startRound();
+            return true;
+        }
         return false;
     }
 
     private boolean isGameOver() {
+        if (time == 0 && midgesCatched < midges) {
+            gameOver();
+            return true;
+        }
         return false;
+    }
+
+    private void gameOver() {
+
     }
 
     private void vanishMidge() {
