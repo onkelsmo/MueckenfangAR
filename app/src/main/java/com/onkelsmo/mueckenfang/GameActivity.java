@@ -159,7 +159,10 @@ public class GameActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-
+    public void onClick(View midge) {
+        midgesCatched++;
+        score += 100;
+        updateDisplay();
+        gameArea.removeView(midge);
     }
 }
