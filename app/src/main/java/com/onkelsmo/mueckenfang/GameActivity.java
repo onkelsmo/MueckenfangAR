@@ -2,13 +2,18 @@ package com.onkelsmo.mueckenfang;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.Random;
 
-public class GameActivity extends Activity {
+public class GameActivity extends Activity implements View.OnClickListener {
     private boolean isRuning = false;
     private int round;
     private int score;
@@ -17,6 +22,7 @@ public class GameActivity extends Activity {
     private int time;
     private float scale;
     private Random random = new Random();
+    private ViewGroup gameArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +121,33 @@ public class GameActivity extends Activity {
     }
 
     private void showMidge() {
+        gameArea = (ViewGroup)findViewById(R.id.gamearea);
+
+        int width = gameArea.getWidth();
+        int height = gameArea.getHeight();
+
+        int midgeWidth = Math.round(scale * 50);
+        int midgeHeight = Math.round(scale * 42);
+
+        int left = random.nextInt(width - midgeWidth);
+        int top = random.nextInt(height - midgeHeight);
+
+        ImageView midge = new ImageView(this);
+        midge.setImageResource(R.drawable.muecke);
+        midge.setOnClickListener(this);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(midgeWidth, midgeHeight);
+        params.leftMargin = left;
+        params.topMargin = top;
+        params.gravity = Gravity.TOP + Gravity.START;
+
+        gameArea.addView(midge, params);
+
+        midge.setTag(R.id.date_of_birth, new Date());
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 }
