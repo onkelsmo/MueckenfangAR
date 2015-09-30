@@ -1,6 +1,7 @@
 package com.onkelsmo.mueckenfang;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -114,7 +115,10 @@ public class GameActivity extends Activity implements View.OnClickListener {
     }
 
     private void gameOver() {
-
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.gameover);
+        dialog.show();
+        isRuning = false;
     }
 
     private void vanishMidge() {
