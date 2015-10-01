@@ -2,6 +2,7 @@ package com.onkelsmo.mueckenfang;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -29,6 +30,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private Random random = new Random();
     private ViewGroup gameArea;
     private Handler handler = new Handler();
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,14 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         setContentView(R.layout.game);
         scale = getResources().getDisplayMetrics().density;
         gameArea = (ViewGroup)findViewById(R.id.gamearea);
+        mediaPlayer = MediaPlayer.create(this, R.raw.summen);
         startGame();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mediaPlayer.release();
+        super.onDestroy();
     }
 
     private void startGame() {
@@ -163,6 +172,9 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         gameArea.addView(midge, params);
 
         midge.setTag(R.id.date_of_birth, new Date());
+
+        mediaPlayer.seekTo(0);
+        mediaPlayer.start();
     }
 
     @Override
@@ -171,6 +183,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         score += 100;
         updateDisplay();
         gameArea.removeView(midge);
+        mediaPlayer.pause();
     }
 
     @Override
