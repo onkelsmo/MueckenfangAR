@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".MueckenfangActivity"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:id="@+id/root">
 
     <TextView
         android:text="@string/welcome_msg"
