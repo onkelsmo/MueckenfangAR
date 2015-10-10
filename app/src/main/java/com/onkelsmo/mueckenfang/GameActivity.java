@@ -190,4 +190,10 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     public void run() {
         countDown();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(this);
+    }
 }
