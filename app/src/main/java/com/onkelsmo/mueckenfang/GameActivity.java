@@ -9,6 +9,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -182,8 +184,11 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         midgesCatched++;
         score += 100;
         updateDisplay();
-        gameArea.removeView(midge);
+        Animation hitAnimation = AnimationUtils.loadAnimation(this, R.anim.hit);
+        hitAnimation.setAnimationListener(new MidgeAnimationListener(midge));
+        midge.startAnimation(hitAnimation);
         mediaPlayer.pause();
+        midge.setOnClickListener(null);
     }
 
     @Override
@@ -195,5 +200,33 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     protected void onPause() {
         super.onPause();
         handler.removeCallbacks(this);
+    }
+
+    private class MidgeAnimationListener implements Animation.AnimationListener {
+        private View midge;
+
+        public MidgeAnimationListener(View m) {
+            midge = m;
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    gameArea.removeView(midge);
+                }
+            });
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
     }
 }
