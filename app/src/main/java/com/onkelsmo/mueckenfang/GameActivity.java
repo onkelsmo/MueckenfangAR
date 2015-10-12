@@ -106,11 +106,26 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
             }
         }
         vanishMidge();
+        moveMidge();
         updateDisplay();
         if (!isGameOver()) {
             if (!isRoundOver()) {
                 handler.postDelayed(this, DELAY_MILLIS);
             }
+        }
+    }
+
+    private void moveMidge() {
+        int count = 0;
+        while (count < gameArea.getChildCount()) {
+            ImageView midge = (ImageView)gameArea.getChildAt(count);
+            int vx = (Integer)midge.getTag(R.id.vx);
+            int vy = (Integer)midge.getTag(R.id.vy);
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)midge.getLayoutParams();
+            params.leftMargin += vx * round;
+            params.topMargin += vy * round;
+            midge.setLayoutParams(params);
+            count++;
         }
     }
 
@@ -153,6 +168,17 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     }
 
     private void showMidge() {
+        int vx;
+        int vy;
+
+        do {
+            vx = random.nextInt(3)-1;
+            vy = random.nextInt(3)-1;
+        } while (vx == 0 && vy == 0);
+
+        vx = Math.round(scale * vx);
+        vy = Math.round(scale * vy);
+
         int width = gameArea.getWidth();
         int height = gameArea.getHeight();
 
@@ -174,6 +200,8 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         gameArea.addView(midge, params);
 
         midge.setTag(R.id.date_of_birth, new Date());
+        midge.setTag(R.id.vx, vx);
+        midge.setTag(R.id.vy, vy);
 
         mediaPlayer.seekTo(0);
         mediaPlayer.start();
