@@ -40,7 +40,6 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private Handler handler = new Handler();
     private MediaPlayer mediaPlayer;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,6 +152,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     }
 
     private void gameOver() {
+        setResult(score);
         Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.gameover);
         dialog.show();

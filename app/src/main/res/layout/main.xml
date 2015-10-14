@@ -12,8 +12,8 @@
         android:text="@string/welcome_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textColor="@color/background_floating_material_light"
+        android:textSize="26sp"
+        android:textColor="@color/white"
         android:layout_gravity="center" />
 
     <ImageView
@@ -26,6 +26,35 @@
         android:layout_height="wrap_content"
         android:text="@string/start"
         android:id="@+id/button"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/highscore"
+        android:id="@+id/textView2"
+        android:layout_gravity="center_horizontal"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:shadowColor="@color/white"
+        android:shadowDx="-2"
+        android:shadowDy="2"
+        android:shadowRadius="0.01"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/highscore"
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:shadowColor="@color/black"
+        android:shadowDx="-2"
+        android:shadowDy="2"
+        android:shadowRadius="0.01"
         android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
