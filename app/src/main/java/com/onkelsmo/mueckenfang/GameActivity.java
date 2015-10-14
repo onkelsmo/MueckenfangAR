@@ -22,6 +22,12 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private static final long MAXAGE_MS = 2000;
     public static final int DELAY_MILLIS = 100;
     public static final int TIMESCALE = 600;
+    private static final int SPEED = 3;
+    private static final String[][] DIRECTION = {
+            {"nw", "n", "no"},
+            {"w", "", "o"},
+            {"sw", "s", "so"}
+    };
     private boolean isRuning = false;
     private int round;
     private int score;
@@ -33,6 +39,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private ViewGroup gameArea;
     private Handler handler = new Handler();
     private MediaPlayer mediaPlayer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +90,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         FrameLayout flTime = (FrameLayout)findViewById(R.id.bar_time);
 
         LayoutParams lpHits = flHits.getLayoutParams();
-        lpHits.width = Math.round(scale * 300 * Math.min(midgesCatched,midges) / midges);
+        lpHits.width = Math.round(scale * 300 * Math.min(midgesCatched, midges) / midges);
 
         LayoutParams lpTime = flTime.getLayoutParams();
         lpTime.width = Math.round(scale * time * 300 / TIMESCALE);
@@ -122,8 +129,8 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
             int vx = (Integer)midge.getTag(R.id.vx);
             int vy = (Integer)midge.getTag(R.id.vy);
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)midge.getLayoutParams();
-            params.leftMargin += vx * round;
-            params.topMargin += vy * round;
+            params.leftMargin += vx * round * SPEED;
+            params.topMargin += vy * round * SPEED;
             midge.setLayoutParams(params);
             count++;
         }
@@ -168,17 +175,6 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     }
 
     private void showMidge() {
-        int vx;
-        int vy;
-
-        do {
-            vx = random.nextInt(3)-1;
-            vy = random.nextInt(3)-1;
-        } while (vx == 0 && vy == 0);
-
-        vx = Math.round(scale * vx);
-        vy = Math.round(scale * vy);
-
         int width = gameArea.getWidth();
         int height = gameArea.getHeight();
 
@@ -189,7 +185,6 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         int top = random.nextInt(height - midgeHeight);
 
         ImageView midge = new ImageView(this);
-        midge.setImageResource(R.drawable.muecke);
         midge.setOnClickListener(this);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(midgeWidth, midgeHeight);
@@ -198,6 +193,24 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         params.gravity = Gravity.TOP + Gravity.START;
 
         gameArea.addView(midge, params);
+
+        int vx;
+        int vy;
+
+        do {
+            vx = random.nextInt(3)-1;
+            vy = random.nextInt(3)-1;
+        } while (vx == 0 && vy == 0);
+
+        setImage(midge, vx, vy);
+
+        double factor = 1.0;
+        if (vx != 0 && vy != 0) {
+            factor = 0.70710678;
+        }
+
+        vx = (int)Math.round(scale * vx * factor);
+        vy = (int)Math.round(scale * vy * factor);
 
         midge.setTag(R.id.date_of_birth, new Date());
         midge.setTag(R.id.vx, vx);
@@ -256,5 +269,14 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         public void onAnimationRepeat(Animation animation) {
 
         }
+    }
+
+    private void setImage(ImageView midge, int vx, int vy) {
+        midge.setImageResource(
+                getResources().getIdentifier(
+                        "muecke_" + DIRECTION[vy+1][vx+1],
+                        "drawable", this.getPackageName()
+                )
+        );
     }
 }
