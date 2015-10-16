@@ -6,4 +6,6 @@
     <string name="start">Start</string>
     <string name="welcome_msg">Willkommen beim Mückenfang</string>
     <string name="highscore">Highscore</string>
+    <string name="save">Speichern</string>
+    <string name="get_highscore">Highscore! Bitte Namen eintragen.</string>
 </resources>
