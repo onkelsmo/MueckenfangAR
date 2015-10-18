@@ -3,8 +3,10 @@ package com.onkelsmo.mueckenfang;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,7 +15,19 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MueckenfangActivity extends Activity implements View.OnClickListener {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MueckenfangActivity extends Activity implements View.OnClickListener, Html.ImageGetter {
+    private static final String HIGHSCORE_SERVER_BASE_URL = "http://myhighscoreserver.appspot.com/highscoreserver";
+    private static final String HIGHSCORE_SERVER_GAME_ID = "mueckenfang";
+
     private Animation fadeInAnimation;
     private Animation wiggleAnimation;
     private Button startButton;
@@ -21,6 +35,7 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
     private Runnable wiggleRunnable = new WiggleButton();
     private LinearLayout nameInput;
     private Button saveButton;
+    private String highscoreHtml = "";
 
     @Override
     protected void onResume() {
@@ -29,6 +44,7 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
         View view = findViewById(R.id.root);
         view.startAnimation(fadeInAnimation);
         handler.postDelayed(wiggleRunnable, 1000*10);
+        internetHighscores("", 0);
     }
 
     private void showHighscore() {
@@ -90,6 +106,7 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
             writeHighscoreName();
             showHighscore();
             nameInput.setVisibility(View.INVISIBLE);
+            internetHighscores(readHighscoreName(), readHighscore());
         }
     }
 
@@ -105,6 +122,57 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
     private String readHighscoreName() {
         SharedPreferences pref = getSharedPreferences("GAME", 0);
         return pref.getString("HIGHSCORE_NAME", "");
+    }
+
+    private void internetHighscores(final String name, final int points) {
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(HIGHSCORE_SERVER_BASE_URL
+                    + "?game=" + HIGHSCORE_SERVER_GAME_ID
+                    + "&name=" + URLEncoder.encode(name, "UTF-8")
+                    + "&points=" + Integer.toString(points)
+                    + "&max=100");
+
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    InputStreamReader input = new InputStreamReader(conn.getInputStream(), "UTF8");
+                    BufferedReader reader = new BufferedReader(input, 2000);
+
+                    List<String> highscoreList = new ArrayList<String>();
+                    String line = reader.readLine();
+                    while (line != null) {
+                        highscoreList.add(line);
+                        line = reader.readLine();
+                    }
+
+                    highscoreHtml = "";
+                    for (String s : highscoreList) {
+                        highscoreHtml += "<b>"
+                                + s.replace(",", "</b> <font color='red'>")
+                                + "</font><img src='muecke'><br />";
+                    }
+                } catch (IOException e) {
+                    highscoreHtml = "Fehler: " + e.getMessage();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView tv = (TextView)findViewById(R.id.highscores);
+                        tv.setText(Html.fromHtml(highscoreHtml, MueckenfangActivity.this, null));
+                    }
+                });
+            }
+        })).start();
+    }
+
+    @Override
+    public Drawable getDrawable(String source) {
+        int id = getResources().getIdentifier(source, "drawable", this.getPackageName());
+        Drawable d = getResources().getDrawable(id);
+        d.setBounds(0, 0, 30, 30);
+        return d;
     }
 
     private class WiggleButton implements Runnable {
