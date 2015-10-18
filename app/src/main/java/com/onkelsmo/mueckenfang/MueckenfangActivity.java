@@ -1,18 +1,23 @@
 package com.onkelsmo.mueckenfang;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -36,6 +41,9 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
     private LinearLayout nameInput;
     private Button saveButton;
     private String highscoreHtml = "";
+    private List<String> highscoreList = new ArrayList<String>();
+    private ListView listView;
+    private TopListAdapter adapter;
 
     @Override
     protected void onResume() {
@@ -43,7 +51,7 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
         showHighscore();
         View view = findViewById(R.id.root);
         view.startAnimation(fadeInAnimation);
-        handler.postDelayed(wiggleRunnable, 1000*10);
+        handler.postDelayed(wiggleRunnable, 1000 * 10);
         internetHighscores("", 0);
     }
 
@@ -96,6 +104,10 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
         startButton.setOnClickListener(this);
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         wiggleAnimation = AnimationUtils.loadAnimation(this, R.anim.wiggle);
+
+        listView = (ListView)findViewById(R.id.listView);
+        adapter = new TopListAdapter(this, 0);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -139,18 +151,10 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
                     InputStreamReader input = new InputStreamReader(conn.getInputStream(), "UTF8");
                     BufferedReader reader = new BufferedReader(input, 2000);
 
-                    List<String> highscoreList = new ArrayList<String>();
                     String line = reader.readLine();
                     while (line != null) {
                         highscoreList.add(line);
                         line = reader.readLine();
-                    }
-
-                    highscoreHtml = "";
-                    for (String s : highscoreList) {
-                        highscoreHtml += "<b>"
-                                + s.replace(",", "</b> <font color='red'>")
-                                + "</font><img src='muecke'><br />";
                     }
                 } catch (IOException e) {
                     highscoreHtml = "Fehler: " + e.getMessage();
@@ -179,6 +183,37 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
         @Override
         public void run() {
             startButton.startAnimation(wiggleAnimation);
+        }
+    }
+
+    private class TopListAdapter extends ArrayAdapter<String> {
+        public TopListAdapter(Context context, int resource) {
+            super(context, resource);
+        }
+
+        @Override
+        public int getCount() {
+            return highscoreList.size();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.toplist_element, null);
+            }
+
+            TextView tvPlace = (TextView)findViewById(R.id.place);
+            tvPlace.setText(Integer.toString(position + 1) + ".");
+            TextUtils.SimpleStringSplitter sss = new TextUtils.SimpleStringSplitter(',');
+            sss.setString(highscoreList.get(position));
+
+            TextView tvName = (TextView)convertView.findViewById(R.id.name);
+            tvName.setText(sss.next());
+
+            TextView tvScore = (TextView)convertView.findViewById(R.id.score);
+            tvScore.setText(sss.next());
+
+            return convertView;
         }
     }
 }
