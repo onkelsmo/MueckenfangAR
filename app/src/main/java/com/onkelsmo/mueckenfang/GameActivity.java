@@ -39,6 +39,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private ViewGroup gameArea;
     private Handler handler = new Handler();
     private MediaPlayer mediaPlayer;
+    private int severity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         scale = getResources().getDisplayMetrics().density;
         gameArea = (ViewGroup)findViewById(R.id.gamearea);
         mediaPlayer = MediaPlayer.create(this, R.raw.summen);
+        severity = getIntent().getIntExtra("severity",0);
         startGame();
     }
 
@@ -65,7 +67,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
 
     private void startRound() {
         round = round + 1;
-        midges = round * 10;
+        midges = round * (10 + severity * 10);
         midgesCatched = 0;
         time = TIMESCALE;
         updateDisplay();
@@ -223,7 +225,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     @Override
     public void onClick(View midge) {
         midgesCatched++;
-        score += 100;
+        score += 100 + severity * 100;
         updateDisplay();
         Animation hitAnimation = AnimationUtils.loadAnimation(this, R.anim.hit);
         hitAnimation.setAnimationListener(new MidgeAnimationListener(midge));

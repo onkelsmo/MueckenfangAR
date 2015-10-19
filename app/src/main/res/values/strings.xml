@@ -9,4 +9,7 @@
     <string name="save">Speichern</string>
     <string name="get_highscore">Highscore! Bitte Namen eintragen.</string>
     <string name="highscores">Highscores</string>
+    <string name="easy">leicht</string>
+    <string name="medium">mittel</string>
+    <string name="hard">schwer</string>
 </resources>

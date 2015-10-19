@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -41,10 +42,11 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
     private Runnable wiggleRunnable = new WiggleButton();
     private LinearLayout nameInput;
     private Button saveButton;
-    private String highscoreHtml = "";
     private List<String> highscoreList = new ArrayList<String>();
     private ListView listView;
     private TopListAdapter adapter;
+    private Spinner severity;
+    private ArrayAdapter<String> severityAdapter;
 
     @Override
     protected void onResume() {
@@ -109,12 +111,27 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
         listView = (ListView)findViewById(R.id.listView);
         adapter = new TopListAdapter(this, 0);
         listView.setAdapter(adapter);
+
+        severity = (Spinner)findViewById(R.id.severity);
+        severityAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                new String[]{
+                        getString(R.string.easy),
+                        getString(R.string.medium),
+                        getString(R.string.hard)
+                });
+        severityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        severity.setAdapter(severityAdapter);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.start_button) {
-            startActivityForResult(new Intent(this, GameActivity.class), 1);
+            int s = severity.getSelectedItemPosition();
+            Intent intent = new Intent(this, GameActivity.class);
+            intent.putExtra("severity",s);
+            startActivityForResult(intent, 1);
         } else if (v.getId() == R.id.save_button) {
             writeHighscoreName();
             showHighscore();
@@ -153,6 +170,7 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
                     BufferedReader reader = new BufferedReader(input, 2000);
 
                     String line = reader.readLine();
+                    highscoreList.clear();
                     while (line != null) {
                         highscoreList.add(line);
                         line = reader.readLine();
