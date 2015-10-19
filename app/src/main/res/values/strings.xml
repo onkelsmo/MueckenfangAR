@@ -8,4 +8,5 @@
     <string name="highscore">Highscore</string>
     <string name="save">Speichern</string>
     <string name="get_highscore">Highscore! Bitte Namen eintragen.</string>
+    <string name="highscores">Highscores</string>
 </resources>

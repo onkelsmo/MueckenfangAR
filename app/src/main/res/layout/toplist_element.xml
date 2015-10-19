@@ -20,6 +20,6 @@
         android:layout_height="wrap_content"
         android:text="000000"
         android:id="@+id/score"
-        android:layout_gravity="right"
+        android:layout_gravity="top|right"
         android:textColor="@color/red" />
 </FrameLayout>

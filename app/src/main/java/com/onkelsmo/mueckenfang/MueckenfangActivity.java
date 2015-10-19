@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -157,14 +158,13 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
                         line = reader.readLine();
                     }
                 } catch (IOException e) {
-                    highscoreHtml = "Fehler: " + e.getMessage();
+                    Log.d("ERROR", e.getMessage());
                 }
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        TextView tv = (TextView)findViewById(R.id.highscores);
-                        tv.setText(Html.fromHtml(highscoreHtml, MueckenfangActivity.this, null));
+                        adapter.notifyDataSetInvalidated();
                     }
                 });
             }
@@ -202,7 +202,7 @@ public class MueckenfangActivity extends Activity implements View.OnClickListene
                 convertView = getLayoutInflater().inflate(R.layout.toplist_element, null);
             }
 
-            TextView tvPlace = (TextView)findViewById(R.id.place);
+            TextView tvPlace = (TextView)convertView.findViewById(R.id.place);
             tvPlace.setText(Integer.toString(position + 1) + ".");
             TextUtils.SimpleStringSplitter sss = new TextUtils.SimpleStringSplitter(',');
             sss.setString(highscoreList.get(position));
