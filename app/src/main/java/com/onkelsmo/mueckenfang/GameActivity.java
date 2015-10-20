@@ -2,6 +2,9 @@ package com.onkelsmo.mueckenfang;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +21,7 @@ import android.widget.TextView;
 import java.util.Date;
 import java.util.Random;
 
-public class GameActivity extends Activity implements View.OnClickListener, Runnable {
+public class GameActivity extends Activity implements View.OnClickListener, Runnable, Camera.PreviewCallback {
     private static final long MAXAGE_MS = 2000;
     public static final int DELAY_MILLIS = 100;
     public static final int TIMESCALE = 600;
@@ -40,11 +43,13 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private Handler handler = new Handler();
     private MediaPlayer mediaPlayer;
     private int severity;
+    private CameraView cameraView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
+        cameraView = (CameraView)findViewById(R.id.camera);
         scale = getResources().getDisplayMetrics().density;
         gameArea = (ViewGroup)findViewById(R.id.gamearea);
         mediaPlayer = MediaPlayer.create(this, R.raw.summen);
@@ -59,6 +64,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     }
 
     private void startGame() {
+        cameraView.setOneShotPreviewCallback(this);
         isRuning = true;
         round = 0;
         score = 0;
@@ -119,6 +125,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         if (!isGameOver()) {
             if (!isRoundOver()) {
                 handler.postDelayed(this, DELAY_MILLIS);
+                cameraView.setOneShotPreviewCallback(this);
             }
         }
     }
@@ -243,6 +250,48 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     protected void onPause() {
         super.onPause();
         handler.removeCallbacks(this);
+    }
+
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        int width = camera.getParameters().getPreviewSize().width;
+        int height = camera.getParameters().getPreviewSize().height;
+
+        if(camera.getParameters().getPreviewFormat() == ImageFormat.NV21) {
+            checkMidgesForTomatoes(new NV21Image(data, width, height));
+        }
+    }
+
+    private void checkMidgesForTomatoes(NV21Image nv21) {
+        int number = 0;
+        while (number < gameArea.getChildCount()) {
+            ImageView midge = (ImageView)gameArea.getChildAt(number);
+            if (midgeTouchTomato(midge, nv21)) {
+                mediaPlayer.pause();
+                midgesCatched++;
+                score += 200 + severity * 100;
+                updateDisplay();
+                gameArea.removeView(midge);
+            } else {
+                number++;
+            }
+        }
+    }
+
+    private boolean midgeTouchTomato(ImageView midge, NV21Image nv21) {
+        float horizontalFactor = nv21.getHoehe() * 1.0f / getResources().getDisplayMetrics().widthPixels;
+        float verticalFactor = nv21.getBreite() * 1.0f / getResources().getDisplayMetrics().heightPixels;
+        Rect extract = new Rect();
+        extract.bottom = Math.round(nv21.getHoehe() - horizontalFactor * midge.getLeft());
+        extract.top = Math.round(nv21.getHoehe() - horizontalFactor * midge.getRight());
+        extract.right = Math.round(verticalFactor * midge.getBottom());
+        extract.left = Math.round(verticalFactor * midge.getTop());
+
+        int redPixel = nv21.zaehleRotePixel(extract);
+        if (redPixel > 10) {
+            return true;
+        }
+        return false;
     }
 
     private class MidgeAnimationListener implements Animation.AnimationListener {

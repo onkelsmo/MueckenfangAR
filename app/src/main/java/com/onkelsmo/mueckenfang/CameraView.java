@@ -57,4 +57,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         camera.release();
         camera = null;
     }
+
+    public void setOneShotPreviewCallback(Camera.PreviewCallback callback) {
+        if(camera != null) {
+            camera.setOneShotPreviewCallback(callback);
+        }
+    }
 }
