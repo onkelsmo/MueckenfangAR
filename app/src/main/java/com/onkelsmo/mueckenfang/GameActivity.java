@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,7 +23,7 @@ import java.util.Date;
 import java.util.Random;
 
 public class GameActivity extends Activity implements View.OnClickListener, Runnable, Camera.PreviewCallback, SensorEventListener {
-    private static final long MAXAGE_MS = 6000;
+    private static final long MAXAGE_MS = 10000;
     public static final int DELAY_MILLIS = 100;
     public static final int TIMESCALE = 600;
     private static final int CAMERA_WIDTH_AZIMUT = 10;
@@ -37,13 +36,14 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
     private int time;
     private float scale;
     private Random random = new Random();
-    private ViewGroup gameArea;
+    private FrameLayout gameArea;
     private Handler handler = new Handler();
     private MediaPlayer mediaPlayer;
     private int severity;
     private CameraView cameraView;
     private SensorManager sensorManager;
     private Sensor sensor;
+    private RadarView radar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,13 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
         setContentView(R.layout.game);
         cameraView = (CameraView)findViewById(R.id.camera);
         scale = getResources().getDisplayMetrics().density;
-        gameArea = (ViewGroup)findViewById(R.id.gamearea);
+        gameArea = (FrameLayout)findViewById(R.id.gamearea);
         mediaPlayer = MediaPlayer.create(this, R.raw.summen);
         severity = getIntent().getIntExtra("severity", 0);
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        radar = (RadarView)findViewById(R.id.radar);
+        radar.setContainer(gameArea);
         startGame();
     }
 
@@ -241,13 +243,13 @@ public class GameActivity extends Activity implements View.OnClickListener, Runn
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float azimuCamera = event.values[0];
+        float azimutCamera = event.values[0];
         float polarCamera = -90 - event.values[1];
-        setMidgePosition(azimuCamera, polarCamera);
+        setMidgePosition(azimutCamera, polarCamera);
+        radar.setAngle(-event.values[0]);
     }
 
     private void setMidgePosition(float azimutCamera, float polarCamera) {
-        gameArea = (FrameLayout)findViewById(R.id.gamearea);
         int number = 0;
         while (number < gameArea.getChildCount()) {
             ImageView midge = (ImageView)gameArea.getChildAt(number);
